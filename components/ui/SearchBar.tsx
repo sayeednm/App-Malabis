@@ -72,10 +72,10 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
               clearSearch(e as any);
             }}
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-3 hover:bg-red-100 rounded-full transition-all z-30 cursor-pointer touch-manipulation"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 hover:bg-red-100 rounded-full transition-all z-30 cursor-pointer touch-manipulation flex items-center justify-center"
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            <X className="w-5 h-5 text-gray-600 hover:text-red-600 transition-colors" />
+            <X className="w-4.5 h-4.5 text-gray-600 hover:text-red-600 transition-colors" />
           </motion.button>
         )}
       </AnimatePresence>
