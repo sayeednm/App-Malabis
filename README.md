@@ -1,6 +1,14 @@
-# Malabis - Fashion Muslim E-Commerce
+# Malabis - Fashion Muslim Marketplace Aggregator
 
-Website e-commerce fashion muslim dengan desain modern, tema hijau yang nyaman dipandang, dan fitur lengkap.
+Platform pencarian dan rekomendasi produk fashion muslim terbaik dari Shopee & Tokopedia dengan desain modern dan fitur lengkap.
+
+## 🎯 Konsep Baru: Marketplace Aggregator
+
+Malabis bukan lagi e-commerce biasa, tapi **platform agregator** yang menampilkan produk fashion muslim terpilih dari:
+- 🛍️ **Shopee** - Produk dengan harga terbaik
+- 🛒 **Tokopedia** - Produk dari toko terpercaya
+
+Setiap produk memiliki link langsung ke marketplace untuk pembelian.
 
 ## 🎨 Tema Hijau
 
@@ -12,29 +20,49 @@ Perpaduan warna hijau yang menenangkan:
 
 ## ✨ Fitur Lengkap
 
-### 🛍️ Shopping
-- ✅ Search produk real-time
-- ✅ Filter kategori (All, Women, Man, Kids)
-- ✅ Product detail page
-- ✅ Add to cart dengan toast notification
-- ✅ Shopping cart dengan quantity controls
-- ✅ Checkout dengan payment methods
-- ✅ Persistent cart (localStorage)
+### 🛍️ Marketplace Integration
+- ✅ Produk dari Shopee & Tokopedia
+- ✅ Rating & jumlah terjual real
+- ✅ Badge rekomendasi (Best Deal, Top Rated, Best Seller)
+- ✅ Diskon hingga 27%
+- ✅ Link langsung ke marketplace
+- ✅ Nama toko & informasi lengkap
 
-### 👤 User
+### 🔍 Search & Filter
+- ✅ Search produk real-time dengan debouncing
+- ✅ Filter kategori (Semua, Wanita, Pria, Anak)
+- ✅ Filter marketplace (Semua, Shopee, Tokopedia)
+- ✅ Sorting (Rekomendasi, Harga, Rating, Terlaris)
+- ✅ Counter hasil pencarian
+
+### 📱 Camera & Visual Search
+- ✅ Akses kamera real-time
+- ✅ Capture foto produk
+- ✅ Upload dari galeri
+- ✅ Toggle flash
+- ✅ Switch kamera depan/belakang
+
+### 👤 User Features
 - ✅ Profile page dengan stats
+- ✅ Login/Register page (simulated)
 - ✅ Order history dengan status tracking
 - ✅ Address management
 - ✅ Settings (notifications, dark mode)
-- ✅ Favorite products
 
 ### 📱 UI/UX
-- ✅ Bottom navigation (tidak menutupi produk)
-- ✅ Cart badge counter (tanpa angka 0 di bawah)
-- ✅ Toast notifications
+- ✅ Bottom navigation responsive
 - ✅ Smooth animations (Framer Motion)
-- ✅ Responsive design
-- ✅ Visual search page
+- ✅ Product cards dengan badge & rating
+- ✅ Marketplace colors (Shopee orange, Tokopedia green)
+- ✅ Mobile-first design
+
+## 🎯 Keunggulan Platform
+
+1. **Hemat Waktu** - Tidak perlu cek satu-satu di marketplace
+2. **Produk Terpilih** - Hanya fashion muslim terbaik (rating 4.6+)
+3. **Perbandingan Mudah** - Lihat harga dari berbagai toko
+4. **Diskon Terbaik** - Produk dengan diskon hingga 27%
+5. **Terpercaya** - Dari toko official dan terpercaya
 
 ## 🚀 Quick Start
 
