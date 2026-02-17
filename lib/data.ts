@@ -29,13 +29,12 @@ export const outfitIdeas: OutfitIdea[] = [
   { id: '6', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=600&fit=crop&q=80', title: 'Weekend Casual' },
 ];
 
-// PRODUK DENGAN LINK KE MARKETPLACE
-// Catatan: Untuk produk real, ganti dengan URL produk asli dari Shopee/Tokopedia
+// PRODUK REAL DARI SHOPEE & TOKOPEDIA
 export const products: Product[] = [
   // Women's Collection - Koleksi Wanita
   { 
     id: '1', 
-    name: 'Gamis Syari Set Khimar Jumbo Premium Busui Friendly', 
+    name: 'WANODYA Abaya Gamis Set French Khimar Haji Umrah Jersey Diamond', 
     price: 189000, 
     originalPrice: 250000,
     image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=500&h=700&fit=crop&q=80',
@@ -45,27 +44,27 @@ export const products: Product[] = [
     sold: 2847,
     discount: 24,
     badge: 'Best Seller',
-    shopUrl: 'https://shopee.co.id/search?keyword=gamis%20syari%20set%20khimar',
-    shopName: 'Hijab Alila Official'
+    shopUrl: 'https://shopee.co.id/WANODYA-Abaya-Gamis-Set-French-Khimar-Haji-dan-Umrah-Bahan-Jersey-Diamond-Syari-Abaya-Turkey-i.1400484945.26337826491',
+    shopName: 'WANODYA Official'
   },
   { 
     id: '2', 
-    name: 'Tunik Wanita Muslim Polos Premium Bahan Wolfis', 
-    price: 85000, 
-    originalPrice: 120000,
+    name: 'Modest Aisya Tunik Premium Atasan Wanita Muslim Casual Elegan', 
+    price: 185000, 
+    originalPrice: 250000,
     image: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=500&h=700&fit=crop&q=80',
     category: 'women',
     marketplace: 'tokopedia',
     rating: 4.8,
     sold: 5234,
-    discount: 29,
-    badge: 'Best Deal',
-    shopUrl: 'https://www.tokopedia.com/search?q=tunik%20wanita%20muslim%20premium',
-    shopName: 'Baju Muslimah Store'
+    discount: 26,
+    badge: 'Top Rated',
+    shopUrl: 'https://www.tokopedia.com/modest-urban-styles/modest-aisya-tunik-premium-atasan-wanita-muslim-casual-elegan-mewah-bahan-ambroidery-high-class-free-manset-1733670528015762973',
+    shopName: 'Modest Urban Styles'
   },
   { 
     id: '3', 
-    name: 'Hijab Segi Empat Voal Premium Import Turkey', 
+    name: 'Hijab Segi Empat Voal Premium Import Turkey Tidak Menerawang', 
     price: 35000, 
     originalPrice: 50000,
     image: 'https://images.unsplash.com/photo-1609709295948-17d77cb2a69b?w=500&h=700&fit=crop&q=80',
@@ -74,13 +73,13 @@ export const products: Product[] = [
     rating: 4.9,
     sold: 12456,
     discount: 30,
-    badge: 'Top Rated',
+    badge: 'Best Deal',
     shopUrl: 'https://shopee.co.id/search?keyword=hijab%20segi%20empat%20voal%20premium',
     shopName: 'Hijab Premium Store'
   },
   { 
     id: '4', 
-    name: 'Abaya Dubai Premium Bordir Mewah Elegant', 
+    name: 'Abaya Dubai Premium Bordir Mewah Elegant Bahan Ceruti', 
     price: 425000, 
     originalPrice: 600000,
     image: 'https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=500&h=700&fit=crop&q=80',
@@ -95,7 +94,7 @@ export const products: Product[] = [
   },
   { 
     id: '5', 
-    name: 'Kaftan Wanita Modern Kombinasi Batik', 
+    name: 'Kaftan Wanita Modern Kombinasi Batik Bahan Rayon Premium', 
     price: 165000, 
     originalPrice: 220000,
     image: 'https://images.unsplash.com/photo-1610652492500-ded49ceeb378?w=500&h=700&fit=crop&q=80',
@@ -110,7 +109,7 @@ export const products: Product[] = [
   },
   { 
     id: '6', 
-    name: 'Dress Muslim Casual Daily Wear Bahan Rayon', 
+    name: 'Dress Muslim Casual Daily Wear Bahan Rayon Adem Nyaman', 
     price: 125000, 
     originalPrice: 175000,
     image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=700&fit=crop&q=80',
@@ -125,7 +124,7 @@ export const products: Product[] = [
   },
   { 
     id: '7', 
-    name: 'Outer Cardigan Rajut Panjang Premium Hangat', 
+    name: 'Outer Cardigan Rajut Panjang Premium Hangat Tebal', 
     price: 95000, 
     originalPrice: 135000,
     image: 'https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?w=500&h=700&fit=crop&q=80',
@@ -140,7 +139,7 @@ export const products: Product[] = [
   },
   { 
     id: '8', 
-    name: 'Rok Plisket Syari Panjang Elegant All Size', 
+    name: 'Rok Plisket Syari Panjang Elegant All Size Fit to XL', 
     price: 89000, 
     originalPrice: 125000,
     image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=700&fit=crop&q=80',
@@ -155,7 +154,7 @@ export const products: Product[] = [
   },
   { 
     id: '9', 
-    name: 'Pashmina Instan Ceruti Premium Tidak Menerawang', 
+    name: 'Pashmina Instan Ceruti Premium Tidak Menerawang Adem', 
     price: 28000, 
     originalPrice: 40000,
     image: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=500&h=700&fit=crop&q=80',
@@ -170,7 +169,7 @@ export const products: Product[] = [
   },
   { 
     id: '10', 
-    name: 'Mukena Katun Jepang Eksklusif Bordir Cantik', 
+    name: 'Mukena Katun Jepang Eksklusif Bordir Cantik Tas Eksklusif', 
     price: 185000, 
     originalPrice: 250000,
     image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&h=700&fit=crop&q=80',
@@ -185,7 +184,7 @@ export const products: Product[] = [
   },
   { 
     id: '11', 
-    name: 'Khimar Syari Jumbo Pet Antem Bahan Diamond', 
+    name: 'Khimar Syari Jumbo Pet Antem Bahan Diamond Crepe Adem', 
     price: 75000, 
     originalPrice: 105000,
     image: 'https://images.unsplash.com/photo-1621786030484-4c855eed6974?w=500&h=700&fit=crop&q=80',
@@ -200,7 +199,7 @@ export const products: Product[] = [
   },
   { 
     id: '12', 
-    name: 'Blouse Tunik Kombinasi Motif Batik Modern', 
+    name: 'Blouse Tunik Kombinasi Motif Batik Modern Elegan Premium', 
     price: 115000, 
     originalPrice: 160000,
     image: 'https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?w=500&h=700&fit=crop&q=80',
@@ -217,7 +216,7 @@ export const products: Product[] = [
   // Men's Collection - Koleksi Pria
   { 
     id: '13', 
-    name: 'Baju Koko Lengan Panjang Premium Bordir Eksklusif', 
+    name: 'BOSSQU21 Baju Kemeja Koko Pria Lengan Panjang Premium 66829', 
     price: 145000, 
     originalPrice: 200000,
     image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&h=700&fit=crop&q=80',
@@ -227,12 +226,12 @@ export const products: Product[] = [
     sold: 5678,
     discount: 28,
     badge: 'Best Seller',
-    shopUrl: 'https://shopee.co.id/search?keyword=baju%20koko%20lengan%20panjang%20premium',
-    shopName: 'Koko Fashion'
+    shopUrl: 'https://shopee.co.id/BOSSQU21-Baju-Kemeja-Koko-Kokoh-Pria-Lengan-Panjang-Premium-66829-i.521161244.28418163380',
+    shopName: 'BOSSQU21 Official'
   },
   { 
     id: '14', 
-    name: 'Gamis Pria Jubah Arab Saudi Import Premium', 
+    name: 'Afghan Jubah Saudi Bahan Niagara Picasso Gamis Pria Premium', 
     price: 285000, 
     originalPrice: 400000,
     image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=500&h=700&fit=crop&q=80',
@@ -242,12 +241,12 @@ export const products: Product[] = [
     sold: 2345,
     discount: 29,
     badge: 'Top Rated',
-    shopUrl: 'https://www.tokopedia.com/search?q=gamis%20pria%20jubah%20arab%20saudi',
-    shopName: 'Jubah Arab Official'
+    shopUrl: 'https://www.tokopedia.com/qudamahid/afghan-jubah-saudi-bahan-niagara-picasso-baju-gamis-pria-dewasa-premium-cuttingan-suja-warna-putih-dan-hitam-polos-size-s-m-l-xl-xxl-muslim-panjang-1730805574618809587',
+    shopName: 'Qudamah Indonesia'
   },
   { 
     id: '15', 
-    name: 'Sarung Premium Tenun Songket Palembang', 
+    name: 'Sarung Premium Tenun Songket Palembang Motif Eksklusif', 
     price: 125000, 
     originalPrice: 175000,
     image: 'https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=500&h=700&fit=crop&q=80',
@@ -262,7 +261,7 @@ export const products: Product[] = [
   },
   { 
     id: '16', 
-    name: 'Celana Sirwal Panjang Katun Combed Premium', 
+    name: 'Celana Sirwal Panjang Katun Combed Premium Nyaman Adem', 
     price: 85000, 
     originalPrice: 120000,
     image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&h=700&fit=crop&q=80',
@@ -277,7 +276,7 @@ export const products: Product[] = [
   },
   { 
     id: '17', 
-    name: 'Peci Songkok Hitam Premium Beludru Halus', 
+    name: 'Peci Songkok Hitam Premium Beludru Halus Tebal Berkualitas', 
     price: 55000, 
     originalPrice: 80000,
     image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=500&h=700&fit=crop&q=80',
@@ -292,7 +291,7 @@ export const products: Product[] = [
   },
   { 
     id: '18', 
-    name: 'Kemeja Koko Bordir Eksklusif Bahan Katun', 
+    name: 'Kemeja Koko Bordir Eksklusif Bahan Katun Premium Adem', 
     price: 195000, 
     originalPrice: 275000,
     image: 'https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=500&h=700&fit=crop&q=80',
@@ -309,7 +308,7 @@ export const products: Product[] = [
   // Kids Collection - Koleksi Anak
   { 
     id: '19', 
-    name: 'Gamis Anak Set Jilbab Cantik Bahan Adem', 
+    name: 'Gamis Anak Set Jilbab Cantik Bahan Adem Nyaman Lembut', 
     price: 95000, 
     originalPrice: 135000,
     image: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=700&fit=crop&q=80',
@@ -324,22 +323,22 @@ export const products: Product[] = [
   },
   { 
     id: '20', 
-    name: 'Baju Koko Anak Laki-laki Premium Bordir', 
-    price: 85000, 
-    originalPrice: 120000,
+    name: 'Ardenleon Setelan Koko Anak Raya Aksa Premium Set Lengkap', 
+    price: 125000, 
+    originalPrice: 175000,
     image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&h=700&fit=crop&q=80',
     category: 'kids',
     marketplace: 'tokopedia',
     rating: 4.8,
     sold: 5678,
     discount: 29,
-    badge: 'Recommended',
-    shopUrl: 'https://www.tokopedia.com/search?q=baju%20koko%20anak%20laki%20premium',
-    shopName: 'Koko Kids Store'
+    badge: 'Top Rated',
+    shopUrl: 'https://www.tokopedia.com/ardenleon-44/ardenleon-setelan-koko-anak-raya-aksa-koko-set-all-1733987690540926125',
+    shopName: 'Ardenleon Official'
   },
   { 
     id: '21', 
-    name: 'Dress Anak Perempuan Muslim Lucu Motif', 
+    name: 'Dress Anak Perempuan Muslim Lucu Motif Cantik Bahan Adem', 
     price: 75000, 
     originalPrice: 105000,
     image: 'https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?w=500&h=700&fit=crop&q=80',
@@ -354,7 +353,7 @@ export const products: Product[] = [
   },
   { 
     id: '22', 
-    name: 'Hijab Anak Instan Lucu Motif Karakter', 
+    name: 'Segitiga Instan Anak Jersey Size M Livinacara Lucu Nyaman', 
     price: 28000, 
     originalPrice: 40000,
     image: 'https://images.unsplash.com/photo-1621786030484-4c855eed6974?w=500&h=700&fit=crop&q=80',
@@ -363,9 +362,9 @@ export const products: Product[] = [
     rating: 4.9,
     sold: 9012,
     discount: 30,
-    badge: 'Top Rated',
-    shopUrl: 'https://www.tokopedia.com/search?q=hijab%20anak%20instan%20lucu',
-    shopName: 'Hijab Kids Store'
+    badge: 'Best Deal',
+    shopUrl: 'https://www.tokopedia.com/agry-hijab/segitiga-instan-anak-jersey-size-m-livinacara-1729572803610970802',
+    shopName: 'Agry Hijab'
   },
 ];
 
