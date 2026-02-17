@@ -84,7 +84,15 @@ export default function FavoritePage() {
                     id={product.id}
                     name={product.name}
                     price={product.price}
+                    originalPrice={product.originalPrice}
                     image={product.image}
+                    marketplace={product.marketplace}
+                    rating={product.rating}
+                    sold={product.sold}
+                    discount={product.discount}
+                    badge={product.badge}
+                    shopUrl={product.shopUrl}
+                    shopName={product.shopName}
                   />
                 </motion.div>
               ))}
