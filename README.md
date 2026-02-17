@@ -2,9 +2,11 @@
 
 Platform pencarian dan rekomendasi produk fashion muslim terbaik dari Shopee & Tokopedia dengan desain modern dan fitur lengkap.
 
-## 🎯 Konsep Baru: Marketplace Aggregator
+> ✨ **Live Demo**: Cari produk fashion muslim terbaik dengan filter kategori, marketplace, dan sorting!
 
-Malabis bukan lagi e-commerce biasa, tapi **platform agregator** yang menampilkan produk fashion muslim terpilih dari:
+## 🎯 Konsep: Marketplace Aggregator
+
+Malabis adalah **platform agregator** yang menampilkan produk fashion muslim terpilih dari:
 - 🛍️ **Shopee** - Produk dengan harga terbaik
 - 🛒 **Tokopedia** - Produk dari toko terpercaya
 
