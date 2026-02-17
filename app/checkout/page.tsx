@@ -230,16 +230,56 @@ export default function CheckoutPage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handlePayment}
                 disabled={isProcessing || items.length === 0}
-                className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? 'Memproses...' : 'Bayar Sekarang'}
               </motion.button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 border-t border-gray-300"></div>
+                <span className="text-sm text-gray-500 font-semibold">ATAU</span>
+                <div className="flex-1 border-t border-gray-300"></div>
+              </div>
+
+              {/* Marketplace Checkout Options */}
+              <div className="space-y-2 mb-4">
+                <a 
+                  href="https://shopee.co.id" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2"
+                  >
+                    <span>🛍️</span>
+                    <span>Checkout di Shopee</span>
+                  </motion.button>
+                </a>
+                
+                <a 
+                  href="https://www.tokopedia.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2"
+                  >
+                    <span>🛒</span>
+                    <span>Checkout di Tokopedia</span>
+                  </motion.button>
+                </a>
+              </div>
 
               {showSuccess && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 bg-green-100 text-green-700 rounded-xl text-center font-semibold"
+                  className="p-4 bg-green-100 text-green-700 rounded-xl text-center font-semibold mb-4"
                 >
                   ✅ Pembayaran Berhasil!
                 </motion.div>
