@@ -1,15 +1,29 @@
 'use client';
 
-import { ArrowLeft, Bell, Lock, Globe, Moon, CreditCard, HelpCircle, Info } from 'lucide-react';
+import { ArrowLeft, Bell, Lock, Globe, Moon, CreditCard, HelpCircle, Info, LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+
+type SettingItem = {
+  icon: LucideIcon;
+  label: string;
+  href?: string;
+  value?: string | boolean;
+  toggle?: boolean;
+  onChange?: (value: boolean) => void;
+};
+
+type SettingSection = {
+  title: string;
+  items: SettingItem[];
+};
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
-  const settingsSections = [
+  const settingsSections: SettingSection[] = [
     {
       title: 'Akun',
       items: [
