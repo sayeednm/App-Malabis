@@ -109,21 +109,28 @@ export default function ProductDetailPage() {
             {/* Title & Rating */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-1 bg-gradient-to-r from-lime-500 to-green-500 text-white text-xs font-bold rounded-full">
-                  NEW
-                </span>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
-                  Best Seller
+                {product.badge && (
+                  <span className="px-3 py-1 bg-gradient-to-r from-lime-500 to-green-500 text-white text-xs font-bold rounded-full">
+                    {product.badge}
+                  </span>
+                )}
+                <span className={`px-3 py-1 text-white text-xs font-bold rounded-full ${
+                  product.marketplace === 'shopee' 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500' 
+                    : 'bg-gradient-to-r from-green-500 to-emerald-600'
+                }`}>
+                  {product.marketplace === 'shopee' ? 'Shopee' : 'Tokopedia'}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-3">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
+              <p className="text-sm text-gray-500 mb-3">{product.shopName}</p>
               <div className="flex items-center gap-2">
                 <div className="flex text-yellow-500">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
+                    <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-current' : ''}`} />
                   ))}
                 </div>
-                <span className="text-gray-600">(4.9) • 127 Reviews</span>
+                <span className="text-gray-600">({product.rating}) • {product.sold.toLocaleString('id-ID')} terjual</span>
               </div>
             </div>
 
@@ -133,12 +140,18 @@ export default function ProductDetailPage() {
                 <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
                   {formatPrice(product.price)}
                 </span>
-                <span className="text-lg text-gray-400 line-through">
-                  {formatPrice(product.price + 50000)}
-                </span>
-                <span className="px-3 py-1 bg-red-100 text-red-600 text-sm font-bold rounded-full">
-                  -15%
-                </span>
+                {product.originalPrice && (
+                  <>
+                    <span className="text-lg text-gray-400 line-through">
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                    {product.discount && (
+                      <span className="px-3 py-1 bg-red-100 text-red-600 text-sm font-bold rounded-full">
+                        -{product.discount}%
+                      </span>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
@@ -213,15 +226,21 @@ export default function ProductDetailPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleAddToCart}
-                className="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition flex items-center justify-center gap-2"
+              <a 
+                href={product.shopUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex-1"
               >
-                <ShoppingCart className="w-6 h-6" />
-                Tambah ke Keranjang
-              </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  Beli di {product.marketplace === 'shopee' ? 'Shopee' : 'Tokopedia'}
+                </motion.button>
+              </a>
             </div>
           </motion.div>
         </div>
