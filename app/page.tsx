@@ -10,17 +10,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type Category = 'all' | 'man' | 'women' | 'kids';
+type Marketplace = 'all' | 'shopee' | 'tokopedia';
+type SortBy = 'recommended' | 'price-low' | 'price-high' | 'rating' | 'sold';
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
+  const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace>('all');
+  const [sortBy, setSortBy] = useState<SortBy>('recommended');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredProducts = products.filter(p => {
+  let filteredProducts = products.filter(p => {
     const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
+    const matchMarketplace = selectedMarketplace === 'all' || p.marketplace === selectedMarketplace;
     const matchSearch = searchQuery === '' || 
       p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCategory && matchSearch;
+    return matchCategory && matchMarketplace && matchSearch;
   });
+
+  // Sorting
+  if (sortBy === 'price-low') {
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
+  } else if (sortBy === 'price-high') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
+  } else if (sortBy === 'rating') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
+  } else if (sortBy === 'sold') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.sold - a.sold);
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 pb-24">
@@ -147,8 +163,9 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mb-8"
+          className="mb-6"
         >
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Kategori</h3>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {(['all', 'women', 'man', 'kids'] as Category[]).map((category) => (
               <motion.button
@@ -167,6 +184,58 @@ export default function Home() {
                  category === 'man' ? '👔 Pria' : '👶 Anak-anak'}
               </motion.button>
             ))}
+          </div>
+        </motion.section>
+
+        {/* Marketplace & Sort Filter */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45 }}
+          className="mb-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Marketplace Filter */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Marketplace</h3>
+              <div className="flex gap-3">
+                {(['all', 'shopee', 'tokopedia'] as Marketplace[]).map((mp) => (
+                  <motion.button
+                    key={mp}
+                    onClick={() => setSelectedMarketplace(mp)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-6 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all shadow ${
+                      selectedMarketplace === mp
+                        ? mp === 'shopee' 
+                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
+                          : mp === 'tokopedia'
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                          : 'bg-gradient-to-r from-emerald-600 to-green-600 text-white'
+                        : 'bg-white text-gray-700 hover:shadow-lg'
+                    }`}
+                  >
+                    {mp === 'all' ? 'Semua' : mp === 'shopee' ? '🛍️ Shopee' : '🛒 Tokopedia'}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort Filter */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Urutkan</h3>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortBy)}
+                className="w-full px-4 py-2 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:outline-none text-sm font-semibold text-gray-700 bg-white shadow"
+              >
+                <option value="recommended">⭐ Rekomendasi</option>
+                <option value="price-low">💰 Harga Terendah</option>
+                <option value="price-high">💎 Harga Tertinggi</option>
+                <option value="rating">⭐ Rating Tertinggi</option>
+                <option value="sold">🔥 Terlaris</option>
+              </select>
+            </div>
           </div>
         </motion.section>
 
@@ -223,7 +292,15 @@ export default function Home() {
                     id={product.id}
                     name={product.name}
                     price={product.price}
+                    originalPrice={product.originalPrice}
                     image={product.image}
+                    marketplace={product.marketplace}
+                    rating={product.rating}
+                    sold={product.sold}
+                    discount={product.discount}
+                    badge={product.badge}
+                    shopUrl={product.shopUrl}
+                    shopName={product.shopName}
                   />
                 </motion.div>
               ))}
