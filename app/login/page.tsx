@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,23 +17,65 @@ export default function LoginPage() {
     name: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
 
-    // Simulasi login/register
-    setTimeout(() => {
-      // Simpan user data ke localStorage
-      localStorage.setItem('user', JSON.stringify({
-        email: formData.email,
-        name: formData.name || formData.email.split('@')[0],
-        isLoggedIn: true,
-      }));
-      
+    try {
+      if (isLogin) {
+        // Login
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) throw error;
+
+        // Redirect to home or previous page
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || '/';
+        router.push(redirect);
+      } else {
+        // Register
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name: formData.name,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        // Show success message
+        alert('Registrasi berhasil! Silakan cek email untuk verifikasi.');
+        setIsLogin(true);
+      }
+    } catch (error: any) {
+      setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
       setIsLoading(false);
-      router.push('/');
-    }, 1500);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      setError(error.message || 'Gagal login dengan Google');
+    }
   };
 
   return (
@@ -90,6 +133,17 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
+              >
+                {error}
+              </motion.div>
+            )}
+
             {/* Name (only for register) */}
             {!isLogin && (
               <motion.div
@@ -207,7 +261,11 @@ export default function LoginPage() {
 
           {/* Social Login */}
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-center gap-3 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition font-semibold">
+            <button 
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-3 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition font-semibold"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
