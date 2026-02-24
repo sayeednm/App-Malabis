@@ -9,6 +9,17 @@ const protectedRoutes = ['/checkout', '/orders', '/address', '/profile'];
 const authRoutes = ['/login'];
 
 export async function middleware(request: NextRequest) {
+  // Check if Supabase is configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  // Skip auth check if Supabase not configured
+  if (!supabaseUrl || !supabaseKey || 
+      supabaseUrl.includes('your-project-id') || 
+      supabaseKey.includes('your-anon-key')) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -16,8 +27,8 @@ export async function middleware(request: NextRequest) {
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         get(name: string) {

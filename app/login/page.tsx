@@ -34,17 +34,16 @@ export default function LoginPage() {
 
         if (error) throw error;
 
-        // Show success message
-        alert('Login berhasil! Mengarahkan ke halaman profil...');
+        if (!data.session) {
+          throw new Error('Login gagal: Session tidak dibuat');
+        }
 
         // Redirect to profile or previous page
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || '/profile';
         
-        // Small delay to ensure session is set
-        setTimeout(() => {
-          window.location.href = redirect;
-        }, 500);
+        // Redirect immediately - session should be set by Supabase
+        window.location.href = redirect;
       } else {
         // Register
         const { data, error } = await supabase.auth.signUp({
