@@ -33,6 +33,7 @@ interface Product {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingLocalData, setUsingLocalData] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace>('all');
   const [sortBy, setSortBy] = useState<SortBy>('recommended');
@@ -42,20 +43,46 @@ export default function Home() {
   useEffect(() => {
     async function fetchProducts() {
       try {
+        // Check if Supabase is configured
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseKey || 
+            supabaseUrl.includes('your-project-id') || 
+            supabaseKey.includes('your-anon-key')) {
+          console.log('Supabase not configured, using local data');
+          throw new Error('Supabase not configured');
+        }
+
         const { data, error } = await supabase
           .from('products')
           .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setProducts(data || []);
+        
+        if (data && data.length > 0) {
+          setProducts(data);
+        } else {
+          throw new Error('No products found in database');
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.log('Using local data:', error);
+        setUsingLocalData(true);
         // Fallback to local data if Supabase fails
         const { products: localProducts } = await import('@/lib/data');
         setProducts(localProducts.map(p => ({
-          ...p,
+          id: p.id,
+          name: p.name,
+          price: p.price,
           original_price: p.originalPrice,
+          image: p.image,
+          category: p.category,
+          marketplace: p.marketplace,
+          rating: p.rating,
+          sold: p.sold,
+          discount: p.discount,
+          badge: p.badge,
           shop_url: p.shopUrl,
           shop_name: p.shopName,
         })));
@@ -134,6 +161,28 @@ export default function Home() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        {/* Supabase Status Banner */}
+        {usingLocalData && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-2xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                ⚠️
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-yellow-800">Menggunakan Data Lokal</h3>
+                <p className="text-sm text-yellow-700">
+                  Supabase belum dikonfigurasi. Isi file .env.local dengan credentials Supabase Anda.
+                  <a href="/SUPABASE-SETUP.md" className="underline ml-1">Lihat panduan</a>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats Banner */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
