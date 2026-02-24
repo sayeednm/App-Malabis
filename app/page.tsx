@@ -1,10 +1,11 @@
 'use client';
 
 import { Settings, TrendingUp, Sparkles, Heart } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
 import SearchBar from '@/components/ui/SearchBar';
-import { products, outfitIdeas } from '@/lib/data';
+import { outfitIdeas } from '@/lib/data';
+import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,11 +14,58 @@ type Category = 'all' | 'man' | 'women' | 'kids';
 type Marketplace = 'all' | 'shopee' | 'tokopedia';
 type SortBy = 'recommended' | 'price-low' | 'price-high' | 'rating' | 'sold';
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number;
+  image: string;
+  category: 'man' | 'women' | 'kids';
+  marketplace: 'shopee' | 'tokopedia';
+  rating: number;
+  sold: number;
+  discount?: number;
+  badge?: 'Best Deal' | 'Top Rated' | 'Best Seller' | 'Recommended';
+  shop_url: string;
+  shop_name: string;
+}
+
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace>('all');
   const [sortBy, setSortBy] = useState<SortBy>('recommended');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Fetch products from Supabase
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        // Fallback to local data if Supabase fails
+        const { products: localProducts } = await import('@/lib/data');
+        setProducts(localProducts.map(p => ({
+          ...p,
+          original_price: p.originalPrice,
+          shop_url: p.shopUrl,
+          shop_name: p.shopName,
+        })));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
 
   let filteredProducts = products.filter(p => {
     const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
@@ -256,7 +304,20 @@ export default function Home() {
             </p>
           </motion.div>
           
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-white rounded-3xl overflow-hidden shadow-lg animate-pulse">
+                  <div className="aspect-[3/4] bg-gray-200" />
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-6 bg-gray-200 rounded w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -292,15 +353,15 @@ export default function Home() {
                     id={product.id}
                     name={product.name}
                     price={product.price}
-                    originalPrice={product.originalPrice}
+                    originalPrice={product.original_price}
                     image={product.image}
                     marketplace={product.marketplace}
                     rating={product.rating}
                     sold={product.sold}
                     discount={product.discount}
                     badge={product.badge}
-                    shopUrl={product.shopUrl}
-                    shopName={product.shopName}
+                    shopUrl={product.shop_url}
+                    shopName={product.shop_name}
                   />
                 </motion.div>
               ))}

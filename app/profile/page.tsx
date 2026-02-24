@@ -3,8 +3,47 @@
 import { ArrowLeft, User, Mail, Phone, MapPin, ShoppingBag, Heart, Settings, LogOut, Edit } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+          
+          // Fetch profile data
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+          
+          setProfile(profileData);
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
   const stats = [
     { icon: ShoppingBag, label: 'Total Pesanan', value: '24', color: 'from-emerald-500 to-green-600' },
     { icon: Heart, label: 'Favorit', value: '12', color: 'from-green-500 to-emerald-600' },
@@ -17,6 +56,17 @@ export default function ProfilePage() {
     { icon: MapPin, label: 'Alamat', href: '/address', color: 'text-teal-600', bg: 'bg-teal-50' },
     { icon: Settings, label: 'Pengaturan', href: '/settings', color: 'text-gray-600', bg: 'bg-gray-50' },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Memuat profil...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 pb-32">
@@ -62,8 +112,12 @@ export default function ProfilePage() {
               </motion.button>
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">Ahmad Rizki</h2>
-              <p className="text-gray-600 mb-3">Member sejak Januari 2024</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+              </h2>
+              <p className="text-gray-600 mb-3">
+                Member sejak {new Date(user?.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+              </p>
               <div className="flex gap-2">
                 <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
                   ⭐ Gold Member
@@ -76,11 +130,11 @@ export default function ProfilePage() {
           <div className="space-y-3 pt-6 border-t border-gray-100">
             <div className="flex items-center gap-3 text-gray-700">
               <Mail className="w-5 h-5 text-emerald-600" />
-              <span>ahmad.rizki@email.com</span>
+              <span>{user?.email || 'Belum diisi'}</span>
             </div>
             <div className="flex items-center gap-3 text-gray-700">
               <Phone className="w-5 h-5 text-green-600" />
-              <span>+62 812-3456-7890</span>
+              <span>{profile?.phone || 'Belum diisi'}</span>
             </div>
             <div className="flex items-center gap-3 text-gray-700">
               <MapPin className="w-5 h-5 text-teal-600" />
@@ -133,16 +187,15 @@ export default function ProfilePage() {
         </motion.div>
 
         {/* Logout Button */}
-        <Link href="/login">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition flex items-center justify-center gap-3"
-          >
-            <LogOut className="w-6 h-6" />
-            Keluar
-          </motion.button>
-        </Link>
+        <motion.button
+          onClick={handleLogout}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition flex items-center justify-center gap-3"
+        >
+          <LogOut className="w-6 h-6" />
+          Keluar
+        </motion.button>
       </div>
     </div>
   );
