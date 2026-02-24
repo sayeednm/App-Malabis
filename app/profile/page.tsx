@@ -16,6 +16,26 @@ export default function ProfilePage() {
   useEffect(() => {
     async function loadUser() {
       try {
+        // Check if Supabase is configured
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseKey || 
+            supabaseUrl.includes('your-project-id') || 
+            supabaseKey.includes('your-anon-key')) {
+          // Use dummy data if Supabase not configured
+          setUser({
+            email: 'user@example.com',
+            created_at: new Date().toISOString(),
+          });
+          setProfile({
+            full_name: 'User Demo',
+            phone: '+62 812-3456-7890',
+          });
+          setLoading(false);
+          return;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
@@ -28,9 +48,20 @@ export default function ProfilePage() {
             .single();
           
           setProfile(profileData);
+        } else {
+          // No user logged in, use dummy data
+          setUser({
+            email: 'guest@example.com',
+            created_at: new Date().toISOString(),
+          });
         }
       } catch (error) {
         console.error('Error loading user:', error);
+        // Fallback to dummy data on error
+        setUser({
+          email: 'user@example.com',
+          created_at: new Date().toISOString(),
+        });
       } finally {
         setLoading(false);
       }
@@ -101,7 +132,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-6 mb-6">
             <div className="relative">
               <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-xl">
-                A
+                {(profile?.full_name?.[0] || user?.email?.[0] || 'U').toUpperCase()}
               </div>
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -116,7 +147,7 @@ export default function ProfilePage() {
                 {profile?.full_name || user?.email?.split('@')[0] || 'User'}
               </h2>
               <p className="text-gray-600 mb-3">
-                Member sejak {new Date(user?.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                Member sejak {user?.created_at ? new Date(user.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : 'Baru bergabung'}
               </p>
               <div className="flex gap-2">
                 <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
