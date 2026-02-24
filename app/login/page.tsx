@@ -34,10 +34,11 @@ export default function LoginPage() {
 
         if (error) throw error;
 
-        // Redirect to home or previous page
+        // Redirect to profile or previous page
         const params = new URLSearchParams(window.location.search);
-        const redirect = params.get('redirect') || '/';
+        const redirect = params.get('redirect') || '/profile';
         router.push(redirect);
+        router.refresh();
       } else {
         // Register
         const { data, error } = await supabase.auth.signUp({
@@ -55,10 +56,11 @@ export default function LoginPage() {
 
         // Check if email confirmation is required
         if (data.user && data.session) {
-          // Auto-confirmed, redirect immediately
+          // Auto-confirmed, redirect to profile
           const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || '/';
+          const redirect = params.get('redirect') || '/profile';
           router.push(redirect);
+          router.refresh();
         } else {
           // Email confirmation required
           alert('Registrasi berhasil! Silakan cek email untuk verifikasi, atau langsung login jika sudah aktif.');

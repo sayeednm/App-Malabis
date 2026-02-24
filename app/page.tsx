@@ -34,6 +34,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingLocalData, setUsingLocalData] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace>('all');
   const [sortBy, setSortBy] = useState<SortBy>('recommended');
@@ -43,6 +44,10 @@ export default function Home() {
   useEffect(() => {
     async function fetchProducts() {
       try {
+        // Check user session
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+
         // Check if Supabase is configured
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -143,13 +148,14 @@ export default function Home() {
                   <Settings className="w-6 h-6" />
                 </motion.button>
               </Link>
-              <Link href="/profile">
+              <Link href={user ? "/profile" : "/login"}>
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-12 h-12 bg-gradient-to-br from-lime-400 to-green-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg cursor-pointer"
+                  title={user ? "Profil Saya" : "Login"}
                 >
-                  A
+                  {user ? (user.email?.[0]?.toUpperCase() || 'U') : '?'}
                 </motion.div>
               </Link>
             </div>
