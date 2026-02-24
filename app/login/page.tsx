@@ -37,8 +37,9 @@ export default function LoginPage() {
         // Redirect to profile or previous page
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || '/profile';
-        router.push(redirect);
-        router.refresh();
+        
+        // Use window.location for reliable redirect
+        window.location.href = redirect;
       } else {
         // Register
         const { data, error } = await supabase.auth.signUp({
@@ -59,8 +60,9 @@ export default function LoginPage() {
           // Auto-confirmed, redirect to profile
           const params = new URLSearchParams(window.location.search);
           const redirect = params.get('redirect') || '/profile';
-          router.push(redirect);
-          router.refresh();
+          
+          // Use window.location for reliable redirect
+          window.location.href = redirect;
         } else {
           // Email confirmation required
           alert('Registrasi berhasil! Silakan cek email untuk verifikasi, atau langsung login jika sudah aktif.');
