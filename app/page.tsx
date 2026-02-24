@@ -189,6 +189,31 @@ export default function Home() {
           </motion.div>
         )} */}
 
+        {/* User Welcome Banner */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-gradient-to-r from-emerald-500 to-green-500 rounded-3xl shadow-xl"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-white">
+                <h2 className="text-2xl font-bold mb-1">Selamat Datang, {user.email?.split('@')[0]}! 👋</h2>
+                <p className="text-white/80">Anda sudah login sebagai {user.email}</p>
+              </div>
+              <Link href="/profile">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-white text-emerald-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition"
+                >
+                  Lihat Profil →
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats Banner */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
