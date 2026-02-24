@@ -1,9 +1,11 @@
 'use client';
 
-import { ArrowLeft, Bell, Lock, Globe, Moon, CreditCard, HelpCircle, Info, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Bell, Lock, Globe, Moon, CreditCard, HelpCircle, Info, LucideIcon, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 type SettingItem = {
   icon: LucideIcon;
@@ -20,23 +22,129 @@ type SettingSection = {
 };
 
 export default function SettingsPage() {
-  const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [settings, setSettings] = useState({
+    notifications_enabled: true,
+    email_notifications: true,
+    push_notifications: true,
+    dark_mode: false,
+    language: 'id',
+  });
+
+  useEffect(() => {
+    loadUserSettings();
+  }, []);
+
+  async function loadUserSettings() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      setUser(user);
+
+      // Load settings
+      const { data: userSettings, error } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading settings:', error);
+      } else if (userSettings) {
+        setSettings(userSettings);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateSetting(key: string, value: boolean) {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          [key]: value,
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      setSettings(prev => ({ ...prev, [key]: value }));
+    } catch (error) {
+      console.error('Error updating setting:', error);
+      alert('Gagal menyimpan pengaturan');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Memuat pengaturan...</p>
+        </div>
+      </div>
+    );
+  }
 
   const settingsSections: SettingSection[] = [
     {
       title: 'Akun',
       items: [
-        { icon: Lock, label: 'Ubah Password', href: '#' },
-        { icon: CreditCard, label: 'Metode Pembayaran', href: '#' },
-        { icon: Globe, label: 'Bahasa', value: 'Indonesia', href: '#' },
+        { icon: Lock, label: 'Ubah Password', href: '/settings/password' },
+        { icon: CreditCard, label: 'Metode Pembayaran', href: '/settings/payment' },
+        { icon: Globe, label: 'Bahasa', value: settings.language === 'id' ? 'Indonesia' : 'English', href: '/settings/language' },
       ]
     },
     {
-      title: 'Preferensi',
+      title: 'Notifikasi',
       items: [
-        { icon: Bell, label: 'Notifikasi', toggle: true, value: notifications, onChange: setNotifications },
-        { icon: Moon, label: 'Mode Gelap', toggle: true, value: darkMode, onChange: setDarkMode },
+        { 
+          icon: Bell, 
+          label: 'Notifikasi Umum', 
+          toggle: true, 
+          value: settings.notifications_enabled, 
+          onChange: (val) => updateSetting('notifications_enabled', val)
+        },
+        { 
+          icon: Mail, 
+          label: 'Notifikasi Email', 
+          toggle: true, 
+          value: settings.email_notifications, 
+          onChange: (val) => updateSetting('email_notifications', val)
+        },
+        { 
+          icon: Bell, 
+          label: 'Notifikasi Push', 
+          toggle: true, 
+          value: settings.push_notifications, 
+          onChange: (val) => updateSetting('push_notifications', val)
+        },
+      ]
+    },
+    {
+      title: 'Tampilan',
+      items: [
+        { 
+          icon: Moon, 
+          label: 'Mode Gelap', 
+          toggle: true, 
+          value: settings.dark_mode, 
+          onChange: (val) => updateSetting('dark_mode', val)
+        },
       ]
     },
     {
@@ -98,9 +206,10 @@ export default function SettingsPage() {
                         <motion.button
                           whileTap={{ scale: 0.95 }}
                           onClick={() => item.onChange?.(!item.value)}
+                          disabled={saving}
                           className={`relative w-14 h-8 rounded-full transition-colors ${
                             item.value ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 'bg-gray-300'
-                          }`}
+                          } ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           <motion.div
                             animate={{ x: item.value ? 24 : 2 }}

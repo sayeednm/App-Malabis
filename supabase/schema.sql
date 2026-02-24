@@ -7,6 +7,34 @@ CREATE TABLE public.profiles (
   email TEXT UNIQUE NOT NULL,
   full_name TEXT,
   phone TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User Settings table
+CREATE TABLE public.user_settings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  notifications_enabled BOOLEAN DEFAULT TRUE,
+  email_notifications BOOLEAN DEFAULT TRUE,
+  push_notifications BOOLEAN DEFAULT TRUE,
+  dark_mode BOOLEAN DEFAULT FALSE,
+  language TEXT DEFAULT 'id',
+  currency TEXT DEFAULT 'IDR',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Payment Methods table
+CREATE TABLE public.payment_methods (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('bank_transfer', 'ewallet', 'cod', 'credit_card')),
+  provider TEXT, -- e.g., 'BCA', 'Mandiri', 'GoPay', 'OVO', 'Dana'
+  account_number TEXT,
+  account_name TEXT,
+  is_default BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -84,9 +112,13 @@ CREATE INDEX idx_addresses_user_id ON public.addresses(user_id);
 CREATE INDEX idx_orders_user_id ON public.orders(user_id);
 CREATE INDEX idx_order_items_order_id ON public.order_items(order_id);
 CREATE INDEX idx_favorites_user_id ON public.favorites(user_id);
+CREATE INDEX idx_user_settings_user_id ON public.user_settings(user_id);
+CREATE INDEX idx_payment_methods_user_id ON public.payment_methods(user_id);
 
 -- Row Level Security (RLS) Policies
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payment_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
@@ -98,6 +130,29 @@ CREATE POLICY "Users can view own profile" ON public.profiles
 
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
+
+-- User Settings policies
+CREATE POLICY "Users can view own settings" ON public.user_settings
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own settings" ON public.user_settings
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own settings" ON public.user_settings
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Payment Methods policies
+CREATE POLICY "Users can view own payment methods" ON public.payment_methods
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own payment methods" ON public.payment_methods
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own payment methods" ON public.payment_methods
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own payment methods" ON public.payment_methods
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- Addresses policies
 CREATE POLICY "Users can view own addresses" ON public.addresses
@@ -148,8 +203,14 @@ CREATE POLICY "Products are viewable by everyone" ON public.products
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- Insert profile
   INSERT INTO public.profiles (id, email, full_name)
   VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name');
+  
+  -- Insert default settings
+  INSERT INTO public.user_settings (user_id)
+  VALUES (NEW.id);
+  
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -171,6 +232,14 @@ $$ LANGUAGE plpgsql;
 -- Triggers for updated_at
 CREATE TRIGGER set_updated_at_profiles
   BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER set_updated_at_user_settings
+  BEFORE UPDATE ON public.user_settings
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER set_updated_at_payment_methods
+  BEFORE UPDATE ON public.payment_methods
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TRIGGER set_updated_at_products

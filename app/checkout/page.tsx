@@ -6,30 +6,110 @@ import { formatPrice } from '@/lib/data';
 import { useCartStore } from '@/store/cartStore';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
-  const [paymentMethod, setPaymentMethod] = useState('transfer');
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [selectedPayment, setSelectedPayment] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login?redirect=/checkout');
+        return;
+      }
+      setUser(user);
+
+      // Load payment methods
+      const { data: methods } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false });
+
+      setPaymentMethods(methods || []);
+      
+      // Set default payment method
+      const defaultMethod = methods?.find(m => m.is_default);
+      if (defaultMethod) {
+        setSelectedPayment(defaultMethod.id);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }
   
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingFee = 0; // Free shipping
   const promoDiscount = 0;
   const total = subtotal + shippingFee - promoDiscount;
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!selectedPayment) {
+      alert('Pilih metode pembayaran terlebih dahulu');
+      return;
+    }
+
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // Create order in database
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user.id,
+          total_amount: total,
+          status: 'pending',
+          payment_method: selectedPayment,
+          shipping_address: {
+            label: 'Alamat Rumah',
+            address: 'Jl. Merdeka No. 123, Kelurahan Sukamaju, Kecamatan Bandung Tengah, Bandung 40132',
+            phone: '+62 812-3456-7890',
+          },
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // Success
       setShowSuccess(true);
       setTimeout(() => {
         clearCart();
-        window.location.href = '/';
+        router.push('/orders');
       }, 2000);
-    }, 2000);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('Gagal memproses pembayaran');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -157,35 +237,64 @@ export default function CheckoutPage() {
                 <h2 className="text-2xl font-bold text-gray-800">Metode Pembayaran</h2>
               </div>
               
-              <div className="space-y-3">
-                {[
-                  { id: 'transfer', name: 'Transfer Bank', icon: '🏦' },
-                  { id: 'ewallet', name: 'E-Wallet (GoPay, OVO, Dana)', icon: '💳' },
-                  { id: 'cod', name: 'Bayar di Tempat (COD)', icon: '💵' },
-                ].map((method) => (
-                  <motion.button
-                    key={method.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`w-full p-4 rounded-2xl border-2 transition-all text-left ${
-                      paymentMethod === method.id
-                        ? 'border-emerald-500 bg-gradient-to-r from-green-50 to-emerald-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{method.icon}</span>
-                        <span className="font-semibold text-gray-800">{method.name}</span>
+              {paymentMethods.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600 mb-4">Belum ada metode pembayaran</p>
+                  <Link href="/settings/payment">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-semibold"
+                    >
+                      Tambah Metode Pembayaran
+                    </motion.button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {paymentMethods.map((method) => (
+                    <motion.button
+                      key={method.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedPayment(method.id)}
+                      className={`w-full p-4 rounded-2xl border-2 transition-all text-left ${
+                        selectedPayment === method.id
+                          ? 'border-emerald-500 bg-gradient-to-r from-green-50 to-emerald-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">
+                            {method.type === 'bank_transfer' ? '🏦' : 
+                             method.type === 'ewallet' ? '💳' : 
+                             method.type === 'cod' ? '💵' : '💳'}
+                          </span>
+                          <div>
+                            <span className="font-semibold text-gray-800 block">{method.provider}</span>
+                            {method.account_number && (
+                              <span className="text-sm text-gray-500">{method.account_number}</span>
+                            )}
+                          </div>
+                        </div>
+                        {selectedPayment === method.id && (
+                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        )}
                       </div>
-                      {paymentMethod === method.id && (
-                        <CheckCircle className="w-6 h-6 text-emerald-600" />
-                      )}
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
+                    </motion.button>
+                  ))}
+                  <Link href="/settings/payment">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-600 hover:border-emerald-500 hover:text-emerald-600 transition font-semibold"
+                    >
+                      + Tambah Metode Lain
+                    </motion.button>
+                  </Link>
+                </div>
+              )}
             </motion.section>
           </div>
 
