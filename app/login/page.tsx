@@ -47,14 +47,23 @@ export default function LoginPage() {
             data: {
               full_name: formData.name,
             },
+            emailRedirectTo: `${window.location.origin}/api/auth/callback`,
           },
         });
 
         if (error) throw error;
 
-        // Show success message
-        alert('Registrasi berhasil! Silakan cek email untuk verifikasi.');
-        setIsLogin(true);
+        // Check if email confirmation is required
+        if (data.user && data.session) {
+          // Auto-confirmed, redirect immediately
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect') || '/';
+          router.push(redirect);
+        } else {
+          // Email confirmation required
+          alert('Registrasi berhasil! Silakan cek email untuk verifikasi, atau langsung login jika sudah aktif.');
+          setIsLogin(true);
+        }
       }
     } catch (error: any) {
       setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
